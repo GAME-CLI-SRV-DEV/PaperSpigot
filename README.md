@@ -1,5 +1,5 @@
 > [!WARNING]
-> This is a very early, experimental state of the 1.21.4 update before we started our hard fork process. only used for update for NogyangSpigot Brand.
+> This is a 1.21.5 version of paper. we just ripped bunch of patches
 
 PaperSpigot 
 ===========
