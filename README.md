@@ -1,5 +1,5 @@
 > [!WARNING]
-> This is a 1.21.5 version of paper. we just ripped bunch of patches
+> This is a 1.21.5 version of paper. we just chopped bunch of patches
 
 PaperSpigot 
 ===========
