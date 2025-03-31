@@ -781,25 +781,6 @@ index e3f185dc982d1c38195a4e01ddd485c13ffa58c0..918a045165cdcde264bc24082b7afebb
  public enum ChatColor {
      /**
       * Represents black
-diff --git a/src/main/java/org/bukkit/JukeboxSong.java b/src/main/java/org/bukkit/JukeboxSong.java
-index 5872188c2f3c610ab220a30cf60f45c1eba1b372..c6feb13c735fabbd08676fa8828ce0b9fd54da32 100644
---- a/src/main/java/org/bukkit/JukeboxSong.java
-+++ b/src/main/java/org/bukkit/JukeboxSong.java
-@@ -33,4 +33,14 @@ public interface JukeboxSong extends Keyed, Translatable {
-     private static JukeboxSong get(@NotNull String key) {
-         return Registry.JUKEBOX_SONG.getOrThrow(NamespacedKey.minecraft(key));
-     }
-+
-+    // Paper start - adventure
-+    /**
-+     * @deprecated this method assumes that jukebox song description will
-+     * always be a translatable component which is not guaranteed.
-+     */
-+    @Override
-+    @Deprecated(forRemoval = true)
-+    @org.jetbrains.annotations.NotNull String getTranslationKey();
-+    // Paper end - adventure
- }
 diff --git a/src/main/java/org/bukkit/Keyed.java b/src/main/java/org/bukkit/Keyed.java
 index 32c92621c2c15eec14c50965f5ecda00c46e6c80..e076d447da62445764a9776ee2554c077637d270 100644
 --- a/src/main/java/org/bukkit/Keyed.java
@@ -1012,31 +993,6 @@ index 18a53194483410c4d5ad35f901c90d44efaeef60..aff43d77f31d81b82e5fc5fea6272dda
          @NotNull
          String getDisplayName();
  
-diff --git a/src/main/java/org/bukkit/Sound.java b/src/main/java/org/bukkit/Sound.java
-index fab510afe4fa67d3171e23d739765095916197cb..779fd6dd572dea41e7e22464c9c6068a0fb71b9d 100644
---- a/src/main/java/org/bukkit/Sound.java
-+++ b/src/main/java/org/bukkit/Sound.java
-@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
-  * guarantee values will not be removed from this interface. As such, you should not
-  * depend on the ordinal values of this class.
-  */
--public interface Sound extends OldEnum<Sound>, Keyed {
-+public interface Sound extends OldEnum<Sound>, Keyed, net.kyori.adventure.sound.Sound.Type { // Paper - implement Sound.Type
- 
-     Sound AMBIENT_BASALT_DELTAS_ADDITIONS = getSound("ambient.basalt_deltas.additions");
-     Sound AMBIENT_BASALT_DELTAS_LOOP = getSound("ambient.basalt_deltas.loop");
-@@ -1713,4 +1713,11 @@ public interface Sound extends OldEnum<Sound>, Keyed {
-     static Sound[] values() {
-         return Lists.newArrayList(Registry.SOUNDS).toArray(new Sound[0]);
-     }
-+
-+    // Paper start
-+    @Override
-+    default net.kyori.adventure.key.@NotNull Key key() {
-+        return this.getKey();
-+    }
-+    // Paper end
- }
 diff --git a/src/main/java/org/bukkit/SoundCategory.java b/src/main/java/org/bukkit/SoundCategory.java
 index ac5e263d737973af077e3406a84a84baca4370db..2d91924b7f5ef16a91d40cdc1bfc3d68e0fda38d 100644
 --- a/src/main/java/org/bukkit/SoundCategory.java
@@ -3941,56 +3897,6 @@ index 8d9c309067235b24893de6a86ae8efe1f30015bd..a71a37e3833b6a339c4df8939768c2bd
 +    }
 +    // Paper end
  }
-diff --git a/src/main/java/org/bukkit/inventory/MenuType.java b/src/main/java/org/bukkit/inventory/MenuType.java
-index 45d3889206fb3b7a7303490b8d4e67ede2aae7a4..34d45a105da72481a7c4f2e3831f5d2a676c91c6 100644
---- a/src/main/java/org/bukkit/inventory/MenuType.java
-+++ b/src/main/java/org/bukkit/inventory/MenuType.java
-@@ -145,11 +145,45 @@ public interface MenuType extends Keyed {
-          * @param player the player the view belongs to
-          * @param title the title of the view
-          * @return the created {@link InventoryView}
-+         * @deprecated Use {@link #create(HumanEntity, net.kyori.adventure.text.Component)} instead.
-          */
-         @NotNull
-+        @Deprecated(since = "1.21") // Paper - adventure
-         V create(@NotNull HumanEntity player, @NotNull String title);
-+
-+        // Paper start - adventure
-+        /**
-+         * Creates a view of the specified menu type.
-+         * <p>
-+         * The player provided to create this view must be the player the view
-+         * is opened for. See {@link HumanEntity#openInventory(InventoryView)}
-+         * for more information.
-+         *
-+         * @param player the player the view belongs to
-+         * @param title the title of the view
-+         * @return the created {@link InventoryView}
-+         */
-+        @NotNull
-+        V create(@NotNull HumanEntity player, @NotNull net.kyori.adventure.text.Component title);
-+        // Paper end - adventure
-     }
- 
-+    // Paper start - adventure
-+    /**
-+     * Creates a view of the specified menu type.
-+     * <p>
-+     * The player provided to create this view must be the player the view
-+     * is opened for. See {@link HumanEntity#openInventory(InventoryView)}
-+     * for more information.
-+     *
-+     * @param player the player the view belongs to
-+     * @param title the title of the view
-+     * @return the created {@link InventoryView}
-+     */
-+    @NotNull
-+    InventoryView create(@NotNull HumanEntity player, @NotNull net.kyori.adventure.text.Component title);
-+    // Paper end - adventure
-+
-     /**
-      * Yields this MenuType as a typed version of itself with a plain
-      * {@link InventoryView} representing it.
 diff --git a/src/main/java/org/bukkit/inventory/meta/BookMeta.java b/src/main/java/org/bukkit/inventory/meta/BookMeta.java
 index 9bab73c3c2ca759b8e1c7d07d98cc593c961666a..f0c6943da3f783101ca647b75b3230fae3a310da 100644
 --- a/src/main/java/org/bukkit/inventory/meta/BookMeta.java
@@ -4512,58 +4418,6 @@ index 12595536080ffe09df2b6ecdb83d846f50100d38..9fc47c879ee6b8edf2503f20e4736c29
   */
  public interface WritableBookMeta extends ItemMeta {
  
-diff --git a/src/main/java/org/bukkit/inventory/meta/trim/TrimMaterial.java b/src/main/java/org/bukkit/inventory/meta/trim/TrimMaterial.java
-index ebfd6f5523205cfc932e3d6b351ff26da855fb15..cc38bee3c412bef4767f08407c0f5559a113fce5 100644
---- a/src/main/java/org/bukkit/inventory/meta/trim/TrimMaterial.java
-+++ b/src/main/java/org/bukkit/inventory/meta/trim/TrimMaterial.java
-@@ -61,4 +61,21 @@ public interface TrimMaterial extends Keyed, Translatable {
-     private static TrimMaterial getTrimMaterial(@NotNull String key) {
-         return Registry.TRIM_MATERIAL.getOrThrow(NamespacedKey.minecraft(key));
-     }
-+
-+    // Paper start - adventure
-+    /**
-+     * Get the description of this {@link TrimMaterial}.
-+     *
-+     * @return the description
-+     */
-+    net.kyori.adventure.text.@org.jetbrains.annotations.NotNull Component description();
-+
-+    /**
-+     * @deprecated this method assumes that {@link #description()} will
-+     * always be a translatable component which is not guaranteed.
-+     */
-+    @Override
-+    @Deprecated(forRemoval = true)
-+    @org.jetbrains.annotations.NotNull String getTranslationKey();
-+    // Paper end - adventure
- }
-diff --git a/src/main/java/org/bukkit/inventory/meta/trim/TrimPattern.java b/src/main/java/org/bukkit/inventory/meta/trim/TrimPattern.java
-index e8e0786467bfcea14d30b352489b7bfb1a06addc..56cfe665daba1754e41f633d7c18172bebf87028 100644
---- a/src/main/java/org/bukkit/inventory/meta/trim/TrimPattern.java
-+++ b/src/main/java/org/bukkit/inventory/meta/trim/TrimPattern.java
-@@ -89,4 +89,21 @@ public interface TrimPattern extends Keyed, Translatable {
-     private static TrimPattern getTrimPattern(@NotNull String key) {
-         return Registry.TRIM_PATTERN.getOrThrow(NamespacedKey.minecraft(key));
-     }
-+
-+    // Paper start - adventure
-+    /**
-+     * Get the description of this {@link TrimPattern}.
-+     *
-+     * @return the description
-+     */
-+    net.kyori.adventure.text.@org.jetbrains.annotations.NotNull Component description();
-+
-+    /**
-+     * @deprecated this method assumes that {@link #description()} will
-+     * always be a translatable component which is not guaranteed.
-+     */
-+    @Override
-+    @Deprecated(forRemoval = true)
-+    @org.jetbrains.annotations.NotNull String getTranslationKey();
-+    // Paper end - adventure
- }
 diff --git a/src/main/java/org/bukkit/map/MapCursor.java b/src/main/java/org/bukkit/map/MapCursor.java
 index 3ca6d94e9930c93013ee654d5bc5a5d6656c6c0e..8de6d0c53bce0279a82b84b408e83d2128077400 100644
 --- a/src/main/java/org/bukkit/map/MapCursor.java
