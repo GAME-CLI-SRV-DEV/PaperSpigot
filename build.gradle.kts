@@ -26,6 +26,7 @@ allprojects {
 }
 
 val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
+val fabricmavenpublicurl = "https://maven.fabricmc.net/"
 
 subprojects {
     tasks.withType<JavaCompile> {
@@ -50,6 +51,7 @@ subprojects {
     repositories {
         mavenCentral()
         maven(paperMavenPublicUrl)
+	    maven(fabricmavenpublicurl)
     }
 }
 
@@ -68,7 +70,7 @@ repositories {
 }
 
 dependencies {
-    paramMappings("net.fabricmc:yarn:1.21.4+build.1:mergedv2")
+    paramMappings("net.fabricmc:yarn:1.21.5+build.1:mergedv2")
     remapper("net.fabricmc:tiny-remapper:0.10.3:fat")
     decompiler("org.vineflower:vineflower:1.10.1")
     spigotDecompiler("io.papermc:patched-spigot-fernflower:0.1+build.13")
