@@ -26,7 +26,6 @@ allprojects {
 }
 
 val paperMavenPublicUrl = "https://repo.papermc.io/repository/maven-public/"
-val fabricmavenpublicurl = "https://maven.fabricmc.net/"
 
 subprojects {
     tasks.withType<JavaCompile> {
@@ -51,7 +50,6 @@ subprojects {
     repositories {
         mavenCentral()
         maven(paperMavenPublicUrl)
-	    maven(fabricmavenpublicurl)
     }
 }
 
