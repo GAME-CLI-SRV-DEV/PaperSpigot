@@ -1,5 +1,7 @@
 > [!WARNING]
 > This is a very early, experimental state of the 1.21.4 update before we started our hard fork process. only used for update for NogyangSpigot Brand.
+> This Version Also Contains Reobf Version of the jar with Mojmap Internal Remapper Jar. on 26.1.0-R0.1-SNAPSHOT, all plugins are expected to break ***PERMANENTLY*** forever.\
+> Please help NogyangSpigot Team by signing the petition!
 
 PaperSpigot 
 ===========
